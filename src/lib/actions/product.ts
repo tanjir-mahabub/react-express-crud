@@ -1,5 +1,3 @@
-'use server';
-
 import { API_BASE } from "../utils/apiBase";
 import { sendJSON } from "../utils/fetchHelper";
 import { extractProductFormData } from "../utils/productHelpers";
