@@ -8,12 +8,13 @@ export const createProductAction = async (formData: FormData) => {
     await createProduct(formData);
 };
 
-export default function CreateProduct() {
+export default function CreateProduct({ onSuccess }: { onSuccess?: () => void }) {
     const [message, setMessage] = useState("");
 
     const handleSubmit = async (formData: FormData) => {
         await createProductAction(formData);
         setMessage("✅ Product created successfully!");
+        onSuccess?.(); // Call callback if provided
     };
 
     return (
