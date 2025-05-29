@@ -6,8 +6,8 @@
         "server"
     ],
     "scripts": {
-        "dev:client": "npm --workspace client run dev",
-        "dev:server": "npm --workspace server run dev",
+        "dev:client": "npm run dev --prefix client",
+        "dev:server": "npm run dev --prefix server",
         "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\""
     },
     "devDependencies": {

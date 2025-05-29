@@ -25,6 +25,7 @@ dist-ssr
 
 # root .gitignore
 /node_modules
+**/node_modules/ 
 /dist
 /.env
 client/node_modules
@@ -34,3 +35,4 @@ server/dist
 
 /generated/prisma
 .prisma/
+**/.vite

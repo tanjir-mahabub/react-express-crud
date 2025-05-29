@@ -20,7 +20,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "outDir": "dist",
+    "rootDir": "src"
   },
+  "extends": "./tsconfig.json", // or tsconfig.json
   "include": ["src"]
 }
