@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/main.ts"
+    "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
+    "migrate": "dotenv -e .env -- npx prisma migrate dev --schema=prisma/schema.prisma --name init"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
+    "dotenv-cli": "^8.0.0",
     "sqlite3": "^5.1.7"
   }
 }

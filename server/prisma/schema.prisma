@@ -12,4 +12,10 @@ model Product {
   title       String
   description String
   price       Float
+  discountPercentage Float
+  rating      Float
+  stock       Int
+  brand       String
+  category    String
+  thumbnail   String
 }
