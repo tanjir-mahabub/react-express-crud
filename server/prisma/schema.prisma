@@ -8,41 +8,50 @@ datasource db {
 }
 
 model Product {
-  id                  Int      @id
-  title               String
-  description         String
-  category            String
-  price               Float
-  discountPercentage  Float
-  rating              Float
-  stock               Int
-  tags                String
-  brand               String
-  sku                 String
-  weight              Float
-  width               Float
-  height              Float
-  depth               Float
-  warrantyInformation String
-  shippingInformation String
-  availabilityStatus  String
-  returnPolicy        String
+  id                   Int     @id
+  title                String
+  description          String
+  category             String
+  price                Float
+  discountPercentage   Float
+  rating               Float
+  stock                Int
+  tags                 String 
+  brand                String
+  sku                  String?
+  weight               Float   @default(0)
+  width                Float   @default(0)
+  height               Float   @default(0)
+  depth                Float   @default(0)
+  warrantyInformation  String? @default("")
+  shippingInformation  String? @default("")
+  availabilityStatus   String?
+  returnPolicy         String? @default("")
   minimumOrderQuantity Int
-  barcode             String
-  qrCode              String
-  images              String
-  thumbnail           String
+  barcode              String?
+  qrCode               String?
+  images               String 
+  thumbnail            String
 
-  reviews               Review[]   // Relation: one product has many reviews
+  // Relations
+  reviews       Review[]
+  seededProduct SeededProduct? 
 }
 
 model Review {
-  id             Int      @id @default(autoincrement())
-  rating         Int
-  comment        String
-  date           DateTime
-  reviewerName   String
-  reviewerEmail  String
-  product        Product  @relation(fields: [productId], references: [id])
-  productId      Int
+  id            Int      @id @default(autoincrement())
+  rating        Int
+  comment       String
+  date          DateTime
+  reviewerName  String
+  reviewerEmail String
+  product       Product  @relation(fields: [productId], references: [id])
+  productId     Int
+}
+
+model SeededProduct {
+  id        Int      @id @default(autoincrement())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int      @unique
+  seededAt  DateTime @default(now())
 }

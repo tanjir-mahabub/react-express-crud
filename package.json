@@ -8,7 +8,10 @@
     "scripts": {
         "dev:client": "npm run dev --prefix client",
         "dev:server": "npm run dev --prefix server",
-        "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\""
+        "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+        "seed-server": "npm run seed --workspace=server",
+        "ps-server": "npm run ps --workspace=server",
+        "prisma:generate": "prisma generate --schema=server/prisma/schema.prisma"
     },
     "devDependencies": {        
         "concurrently": "^9.1.2"

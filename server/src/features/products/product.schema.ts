@@ -13,16 +13,37 @@ export const productSchema = z.object({
     brand: z.string().min(1),
     sku: z.string().optional(),
     weight: z.number().nonnegative().optional().default(0),
-    width: z.number().nonnegative().optional().default(0),
-    height: z.number().nonnegative().optional().default(0),
-    depth: z.number().nonnegative().optional().default(0),
+
+    // Handle dimensions object
+    dimensions: z.object({
+        width: z.number().nonnegative(),
+        height: z.number().nonnegative(),
+        depth: z.number().nonnegative()
+    }).optional().default({ width: 0, height: 0, depth: 0 }),
+
     warrantyInformation: z.string().optional().default(''),
     shippingInformation: z.string().optional().default(''),
     availabilityStatus: z.string().optional().default('available'),
     returnPolicy: z.string().optional().default(''),
     minimumOrderQuantity: z.number().int().nonnegative().optional().default(1),
-    barcode: z.string().optional().default(''),
-    qrCode: z.string().optional().default(''),
+
+    // Handle meta object
+    meta: z.object({
+        createdAt: z.string().optional(),
+        updatedAt: z.string().optional(),
+        barcode: z.string().optional().default(''),
+        qrCode: z.string().optional().default('')
+    }).optional(),
+
+    // Handle reviews array
+    reviews: z.array(z.object({
+        rating: z.number().min(0).max(5),
+        comment: z.string(),
+        date: z.string(),
+        reviewerName: z.string(),
+        reviewerEmail: z.string().email()
+    })).optional().default([]),
+
     images: z.array(z.string().url()),
     thumbnail: z.string().url()
 });

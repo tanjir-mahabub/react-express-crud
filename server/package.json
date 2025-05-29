@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
     "migrate": "dotenv -e .env -- npx prisma migrate dev --schema=prisma/schema.prisma --name init",
-    "seed": "ts-node-dev prisma/seed.ts"
+    "seed": "ts-node scripts/seed.ts",
+    "rollback": "ts-node scripts/rollback.ts",
+    "ps": "prisma studio"
   },
   "keywords": [],
   "author": "",

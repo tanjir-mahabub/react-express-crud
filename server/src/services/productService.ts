@@ -25,11 +25,38 @@ export async function scrapeAndSaveProducts(apiUrl: string): Promise<number> {
 
         const product: ProductType = parseResult.data;
 
-        // Prisma upsert with validated data
+        // ✅ Shared productData
+        const productData = {
+            id: product.id,
+            title: product.title,
+            description: product.description,
+            category: product.category,
+            price: product.price,
+            discountPercentage: product.discountPercentage,
+            rating: product.rating,
+            stock: product.stock,
+            tags: JSON.stringify(product.tags),
+            brand: product.brand,
+            sku: product.sku,
+            weight: product.weight,
+            width: product.dimensions?.width ?? 0,
+            height: product.dimensions?.height ?? 0,
+            depth: product.dimensions?.depth ?? 0,
+            warrantyInformation: product.warrantyInformation ?? '',
+            shippingInformation: product.shippingInformation ?? '',
+            availabilityStatus: product.availabilityStatus ?? 'available',
+            returnPolicy: product.returnPolicy ?? '',
+            minimumOrderQuantity: product.minimumOrderQuantity ?? 1,
+            barcode: product.meta?.barcode ?? '',
+            qrCode: product.meta?.qrCode ?? '',
+            images: JSON.stringify(product.images),
+            thumbnail: product.thumbnail
+        };
+
         await prisma.product.upsert({
             where: { id: product.id },
-            update: product,
-            create: product
+            update: productData,
+            create: productData
         });
 
         savedCount++;
