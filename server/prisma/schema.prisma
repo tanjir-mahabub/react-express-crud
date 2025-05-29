@@ -8,14 +8,43 @@ datasource db {
 }
 
 model Product {
-  id          Int     @id @default(autoincrement())
-  title       String
-  description String
-  price       Float
-  discountPercentage Float
-  rating      Float
-  stock       Int
-  brand       String
-  category    String
-  thumbnail   String
+  id                    Int       @id @default(autoincrement())
+  title                 String
+  description           String
+  category              String
+  price                 Float
+  discountPercentage    Float
+  rating                Float
+  stock                 Int
+  tags                  String     // Store as JSON stringified: '["beauty", "mascara"]'
+  brand                 String
+  sku                   String
+  weight                Float
+  width                 Float
+  height                Float
+  depth                 Float
+  warrantyInformation   String
+  shippingInformation   String
+  availabilityStatus    String
+  returnPolicy          String
+  minimumOrderQuantity  Int
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  barcode               String
+  qrCode                String
+  images                String     // Store as JSON stringified: ['url1', 'url2']
+  thumbnail             String
+
+  reviews               Review[]   // Relation: one product has many reviews
+}
+
+model Review {
+  id             Int      @id @default(autoincrement())
+  rating         Int
+  comment        String
+  date           DateTime
+  reviewerName   String
+  reviewerEmail  String
+  product        Product  @relation(fields: [productId], references: [id])
+  productId      Int
 }
