@@ -28,7 +28,7 @@ const main = async () => {
                 discountPercentage: p.discountPercentage,
                 rating: p.rating,
                 stock: p.stock,
-                tags: JSON.stringify(p.tags) ?? [],
+                tags: p.tags ?? [],
                 brand: p.brand ?? 'Unknown',
                 sku: p.sku ?? String(p.id),
                 weight: p.weight ?? p.dimensions?.weight ?? 0,
@@ -42,7 +42,7 @@ const main = async () => {
                 minimumOrderQuantity: p.minimumOrderQuantity ?? 1,
                 barcode: p.meta?.barcode ?? '',
                 qrCode: p.meta?.qrCode ?? '',
-                images: JSON.stringify(p.images) ?? [],
+                images: p.images ?? [],
                 thumbnail: p.thumbnail
             }
         });

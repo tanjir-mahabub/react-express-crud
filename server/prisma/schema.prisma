@@ -16,7 +16,7 @@ model Product {
   discountPercentage   Float
   rating               Float
   stock                Int
-  tags                 String 
+  tags                 Json 
   brand                String
   sku                  String?
   weight               Float   @default(0)
@@ -30,7 +30,7 @@ model Product {
   minimumOrderQuantity Int
   barcode              String?
   qrCode               String?
-  images               String 
+  images               Json 
   thumbnail            String
 
   // Relations

@@ -28,6 +28,15 @@ app.use(
     })
 );
 
+// Welcome Routes
+app.get('/', (req, res) => {
+    res.status(200).json({
+        message: '🎉 Welcome to the Product API!',
+        health: '/api/health',
+        products: '/api/products'
+    });
+});
+
 // Health Check
 app.get('/api/health', (_req, res) => {
     res.status(200).json({ status: 'ok' });

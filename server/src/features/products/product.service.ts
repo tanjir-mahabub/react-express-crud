@@ -12,11 +12,15 @@ const transformForPrisma = (data: ProductType): Prisma.ProductCreateInput => {
 };
 
 export const getAllProducts = () => {
-    return prisma.product.findMany();
+    return prisma.product.findMany({
+        include: {
+            reviews: true,
+        }
+    });
 };
 
 export const getProductById = (id: number) => {
-    return prisma.product.findUnique({ where: { id } });
+    return prisma.product.findUnique({ where: { id }, include: { reviews: true } });
 };
 
 export const createProduct = (data: ProductType) => {
