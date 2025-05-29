@@ -13,7 +13,10 @@ const app = express();
 app.use(helmet());
 
 // CORS
-app.use(cors({ origin: config.frontendOrigin }));
+app.use(cors({ 
+    origin: config.frontendOrigin,
+    credentials: true
+}));
 
 // Body parser
 app.use(express.json());
