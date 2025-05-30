@@ -1,12 +1,27 @@
-import express, { Router, RequestHandler } from 'express';
-import * as productController from './product.controller';
+import { Router } from 'express';
+import {
+    createProduct,
+    getProduct,
+    getAllProducts,
+    updateProduct,
+    deleteProduct,
+} from './product.controller';
 
-const router: Router = express.Router();
+import { methodNotAllowedHandler } from '../../middleware/methodNotAllowedHandler';
 
-router.get('/', productController.getAllProducts as RequestHandler);
-router.get('/:id', productController.getProductById as RequestHandler);
-router.post('/', productController.createProduct as RequestHandler);
-router.put('/:id', productController.updateProduct as RequestHandler);
-router.delete('/:id', productController.deleteProduct as RequestHandler);
+const router = Router();
+
+router
+    .route('/')
+    .get(getAllProducts)
+    .post(createProduct)
+    .all(methodNotAllowedHandler);
+
+router
+    .route('/:id')
+    .get(getProduct)
+    .put(updateProduct)
+    .delete(deleteProduct)
+    .all(methodNotAllowedHandler);
 
 export default router;

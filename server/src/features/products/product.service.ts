@@ -1,46 +1,70 @@
 import prisma from '../../config/db';
 import { ProductType } from './product.schema';
+import { NotFoundError } from '../../errors/NotFoundError';
+import { mapProductToType } from './product.mapper';
+import { toPrismaProductData, toPrismaCreateData } from './product.transform';
 import { Prisma } from '@prisma/client';
+import { ConflictError } from '../../errors/ConflictError'; // create this class if not done
 
-const transformForPrisma = (data: ProductType): Prisma.ProductCreateInput => {
-    const { reviews, ...rest } = data;
-    return {
-        ...rest,
-        tags: JSON.stringify(data.tags),
-        images: JSON.stringify(data.images)
-    };
-};
-
-export const getAllProducts = () => {
-    return prisma.product.findMany({
-        include: {
-            reviews: true,
-        }
+export const findAllProducts = async (): Promise<ProductType[]> => {
+    const products = await prisma.product.findMany({
+        include: { reviews: true },
     });
+    return products.map(mapProductToType);
 };
 
-export const getProductById = (id: number) => {
-    return prisma.product.findUnique({ where: { id }, include: { reviews: true } });
-};
-
-export const createProduct = (data: ProductType) => {
-    return prisma.product.create({ data: transformForPrisma(data) });
-};
-
-export const updateProduct = (id: number, data: Partial<ProductType>) => {
-    const { reviews, tags, images, ...rest } = data;
-    const transformedData: Prisma.ProductUpdateInput = {
-        ...rest,
-        ...(tags && { tags: JSON.stringify(tags) }),
-        ...(images && { images: JSON.stringify(images) })
-    };
-    
-    return prisma.product.update({
+export const findProductById = async (id: number): Promise<ProductType> => {
+    const product = await prisma.product.findUnique({
         where: { id },
-        data: transformedData
+        include: { reviews: true },
     });
+    if (!product) throw new NotFoundError(`Product with id ${id} not found`);
+    return mapProductToType(product);
 };
 
-export const deleteProduct = (id: number) => {
-    return prisma.product.delete({ where: { id } });
+export const createProductService = async (
+    data: Omit<ProductType, 'id' | 'reviews'>
+): Promise<ProductType> => {
+    try {
+        const createData = toPrismaCreateData(data);
+
+        // Don't include client-supplied id; Prisma handles it
+        const product = await prisma.product.create({
+            data: createData as Prisma.ProductUncheckedCreateInput,
+            include: { reviews: true },
+        });
+
+        return mapProductToType(product);
+    } catch (err) {
+        if (
+            err instanceof Prisma.PrismaClientKnownRequestError &&
+            err.code === 'P2002'
+        ) {
+            const targetField = (err.meta as any)?.target?.join(', ') || 'unknown field';
+            throw new ConflictError(`Duplicate value for unique field: ${targetField}`);
+        }
+        throw err;
+    }
+};
+
+export const updateProductService = async (
+    id: number,
+    data: Partial<ProductType>
+): Promise<ProductType> => {
+    const existing = await prisma.product.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundError(`Product with id ${id} not found`);
+
+    const updated = await prisma.product.update({
+        where: { id },
+        data: toPrismaProductData(data),
+        include: { reviews: true },
+    });
+
+    return mapProductToType(updated);
+};
+
+export const deleteProductService = async (id: number): Promise<void> => {
+    const existing = await prisma.product.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundError(`Product with id ${id} not found`);
+    await prisma.product.delete({ where: { id } });
 };
