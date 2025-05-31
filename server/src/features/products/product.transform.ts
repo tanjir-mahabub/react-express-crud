@@ -9,7 +9,7 @@ export const toPrismaCreateData = (
     category: data.category,
     price: data.price,
     discountPercentage: data.discountPercentage,
-    rating: data.rating,
+    rating: data.rating ?? 0,
     stock: data.stock,
     tags: data.tags,
     brand: data.brand,

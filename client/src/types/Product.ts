@@ -19,10 +19,9 @@ export type Product = {
     availabilityStatus?: string;
     returnPolicy?: string;
     minimumOrderQuantity: number;
-    barcode?: string;
-    qrCode?: string;
-    images: any; // Replace with specific type if possible, e.g., string[]
+    images: any;
     thumbnail: string;
+    meta?: ProductMeta;
 
     // Optional - if you're sending related data
     reviews?: Review[];
@@ -43,4 +42,9 @@ export type SeededProduct = {
     id: number;
     productId: number;
     seededAt: string;
+};
+
+export type ProductMeta = {
+    barcode?: string;
+    qrCode?: string;    
 };

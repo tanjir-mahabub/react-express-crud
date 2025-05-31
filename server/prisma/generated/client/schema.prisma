@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../prisma/generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                   Int       @id @default(autoincrement())
+  title                String
+  description          String
+  category             String
+  price                Float
+  discountPercentage   Float
+  rating               Float?
+  stock                Int
+  tags                 Json
+  brand                String
+  sku                  String?   @unique
+  weight               Float     @default(0)
+  width                Float     @default(0)
+  height               Float     @default(0)
+  depth                Float     @default(0)
+  warrantyInformation  String?   @default("")
+  shippingInformation  String?   @default("")
+  availabilityStatus   String?
+  returnPolicy         String?   @default("")
+  minimumOrderQuantity Int
+  barcode              String?
+  qrCode               String?
+  images               Json
+  thumbnail            String
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime?
+
+  // Relations
+  reviews       Review[]
+  seededProduct SeededProduct?
+}
+
+model Review {
+  id            Int      @id @default(autoincrement())
+  rating        Int
+  comment       String
+  date          DateTime
+  reviewerName  String
+  reviewerEmail String
+  product       Product  @relation(fields: [productId], references: [id])
+  productId     Int
+}
+
+model SeededProduct {
+  id        Int      @id @default(autoincrement())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int      @unique
+  seededAt  DateTime @default(now())
+}

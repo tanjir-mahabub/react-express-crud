@@ -27,8 +27,7 @@ export const createProductService = async (
 ): Promise<ProductType> => {
     try {
         const createData = toPrismaCreateData(data);
-
-        // Don't include client-supplied id; Prisma handles it
+        
         const product = await prisma.product.create({
             data: createData as Prisma.ProductUncheckedCreateInput,
             include: { reviews: true },

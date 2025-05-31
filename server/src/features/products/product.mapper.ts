@@ -15,7 +15,7 @@ export const mapProductToType = (
     category: product.category,
     price: product.price,
     discountPercentage: product.discountPercentage,
-    rating: product.rating,
+    rating: product.rating ?? 0,
     stock: product.stock,
     tags: parseJsonArray(product.tags),
     brand: product.brand,
