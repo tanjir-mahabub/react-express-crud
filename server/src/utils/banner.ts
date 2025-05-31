@@ -15,7 +15,8 @@ function getLocalNetworkAddress(): string {
     return 'localhost';
 }
 
-const bannerFlagFile = path.resolve(__dirname, '.banner_printed');
+const tmpDir = path.resolve(__dirname, '../../tmp'); // Adjust relative path if needed
+const bannerFlagFile = path.join(tmpDir, 'banner_printed');
 
 export async function printServerBanner(port: number) {
     if (fs.existsSync(bannerFlagFile)) {
@@ -49,6 +50,8 @@ export async function printServerBanner(port: number) {
     console.log(chalk.blue(title));
     console.log(box);
 
+    // Ensure tmp directory exists
+    fs.mkdirSync(tmpDir, { recursive: true });
     fs.writeFileSync(bannerFlagFile, 'printed');
 
     // Register cleanup handlers once
@@ -67,7 +70,6 @@ function removeBannerFlagFile() {
 }
 
 export function setupCleanup() {
-    // To avoid registering multiple listeners on repeated calls
     if (setupCleanup.hasRun) return;
     setupCleanup.hasRun = true;
 
@@ -83,5 +85,5 @@ export function setupCleanup() {
         process.exit();
     });
 }
-// Track whether setupCleanup was called to prevent multiple listener registrations
+
 setupCleanup.hasRun = false;
