@@ -1,54 +1,146 @@
-# React + TypeScript + Vite
+# React CRUD Fullstack App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a full-stack CRUD application built using **React (Next.js)** for the frontend, **Express (TypeScript)** for the backend, and **Prisma ORM** with **SQLite** as the database.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📁 Project Structure
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```
+react-crud/
+│
+├── client/                # Next.js React frontend
+│
+├── server/                # Express TypeScript backend
+│   ├── src/
+│   │   ├── features/      # Feature modules (products, etc.)
+│   │   ├── middleware/    # Error and 404 handlers
+│   │   ├── errors/        # Custom error classes
+│   │   └── main.ts        # Entry point
+│   └── prisma/
+│       ├── schema.prisma  # Prisma schema
+│       └── generated/     # Custom-generated Prisma client
+│
+├── .env                   # Environment variables
+├── package.json           # Project scripts
+└── README.md              # This file
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## ⚙️ Setup Instructions
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/react-crud.git
+cd react-crud
 ```
+
+### 2. Install Dependencies
+
+```bash
+pnpm install
+```
+
+### 3. Generate Prisma Client
+
+```bash
+pnpm ps:generate
+```
+
+This uses a custom output path defined in `prisma/schema.prisma`:
+
+```prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "../prisma/generated/client"
+}
+```
+
+### 4. Apply Database Migrations
+
+```bash
+pnpm ps:migrate
+```
+
+This creates the `dev.db` SQLite file and sets up the schema.
+
+### 5. Start the App
+
+```bash
+pnpm dev
+```
+
+This runs both the **client** and **server** concurrently:
+
+- Client: [http://localhost:3000](http://localhost:3000)
+- Server: [http://localhost:4000](http://localhost:4000)
+
+---
+
+## 🧪 Available Scripts
+
+| Script            | Description                                  |
+|-------------------|----------------------------------------------|
+| `pnpm dev`        | Start client and server concurrently         |
+| `pnpm dev:client` | Start Next.js client only                    |
+| `pnpm dev:server` | Start Express server only                    |
+| `pnpm ps:generate`| Generate Prisma client                       |
+| `pnpm ps:migrate` | Run database migrations                      |
+| `pnpm ps:studio`  | Open Prisma Studio (visual DB browser)       |
+| `pnpm seed:server`| (Optional) Seed the database                 |
+| `pnpm rollback:server`| (Optional) Rollback the last migration |
+
+---
+
+## 🔐 Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL="file:./dev.db"
+PORT=4000
+```
+
+You can extend it with more config as needed.
+
+---
+
+## ✅ Features
+
+- Full-stack CRUD (Create, Read, Update, Delete)
+- Modular Express routes with services and controllers
+- Prisma ORM with SQLite (can be swapped with PostgreSQL, MySQL, etc.)
+- Error handling middleware for:
+  - Prisma constraint violations
+  - Malformed JSON
+  - Custom app-level errors
+
+---
+
+## 🐛 Common Issues
+
+### ❗ `Cannot find module '.prisma/client/default'`
+
+This happens if:
+- Prisma was not generated correctly, or
+- `@prisma/client` is imported incorrectly
+
+✅ **Fix**: Use your custom generated client:
+
+```ts
+import { PrismaClient } from '../../prisma/generated/client';
+```
+
+For runtime errors like `PrismaClientKnownRequestError`:
+
+```ts
+import { PrismaClientKnownRequestError } from '../../prisma/generated/client/runtime';
+```
+
+---
+
+## 📄 License
+
+MIT © Md Tanjir Mahabub
