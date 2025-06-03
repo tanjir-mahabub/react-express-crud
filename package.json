@@ -5,17 +5,35 @@
         "client",
         "server"
     ],
-    "scripts": {
-        "dev:client": "npm run dev --prefix client",
-        "dev:server": "npm run dev --prefix server",
-        "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-        "seed:server": "npm run seed --workspace=server",
-        "rollback:server": "npm run rollback --workspace=server",
-        "ps:studio": "npx prisma studio --schema=./server/prisma/schema.prisma",
-        "ps:server": "npm run ps --workspace=server",
-        "ps:generate": "npx prisma generate --schema=./server/prisma/schema.prisma"
+    "pnpm": {
+        "ignoredBuiltDependencies": [
+            "core-js",
+            "sharp"
+        ],
+        "onlyBuiltDependencies": [
+            "@prisma/client",
+            "@prisma/engines",
+            "prisma",
+            "sqlite3"
+        ]
     },
-    "devDependencies": {        
-        "concurrently": "^9.1.2"
-    }
+    "scripts": {
+        "dev": "concurrently \"pnpm dev:client\" \"pnpm dev:server\"",
+        "dev:client": "pnpm --filter client dev",
+        "dev:server": "pnpm --filter server dev",
+        "ps:studio": "pnpm --filter server exec prisma studio --schema=./prisma/schema.prisma",
+        "ps:generate": "pnpm prisma generate --schema=./server/prisma/schema.prisma",
+        "ps:migrate": "pnpm --filter server exec prisma migrate dev --name init --schema=./prisma/schema.prisma",
+        "ps:reset": "pnpm --filter server exec prisma migrate reset --schema=./prisma/schema.prisma --force",
+        "seed:server": "pnpm --filter server seed",
+        "rollback:server": "pnpm --filter server rollback"
+    },
+    "devDependencies": {
+        "@types/node": "^22",
+        "concurrently": "^9.1.2",
+        "nanoid": "^5.1.5",
+        "typescript": "^5",
+        "zod": "latest"
+    },
+    "packageManager": "pnpm@10.11.1+sha512.e519b9f7639869dc8d5c3c5dfef73b3f091094b0a006d7317353c72b124e80e1afd429732e28705ad6bfa1ee879c1fce46c128ccebd3192101f43dd67c667912"
 }

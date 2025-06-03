@@ -1,6 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
-import { MethodNotAllowedError } from '../errors/MethodNotAllowedError';
+import { Request, Response } from 'express';
 
-export function methodNotAllowedHandler(_req: Request, _res: Response, next: NextFunction) {
-    next(new MethodNotAllowedError());
-}
+export const methodNotAllowedHandler = (req: Request, res: Response) => {
+    res.status(405).json({
+        status: 'error',
+        message: `Method ${req.method} not allowed on ${req.originalUrl}`,
+    });
+};

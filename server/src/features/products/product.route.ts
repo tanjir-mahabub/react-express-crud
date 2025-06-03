@@ -8,13 +8,20 @@ import {
 } from './product.controller';
 
 import { methodNotAllowedHandler } from '../../middleware/methodNotAllowedHandler';
+import { upload } from '../../utils/multer';
 
 const router = Router();
 
 router
     .route('/')
     .get(getAllProducts)
-    .post(createProduct)
+    .post(
+        upload.fields([
+            { name: 'thumbnail', maxCount: 1 },
+            { name: 'images', maxCount: 10 },
+        ]),
+        createProduct
+    )
     .all(methodNotAllowedHandler);
 
 router

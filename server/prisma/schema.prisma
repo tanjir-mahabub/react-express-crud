@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../prisma/generated/client" 
+  output   = "./generated/client"
 }
 
 datasource db {
@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Product {
-  id                   Int     @id @default(autoincrement())
+  id                   Int      @id @default(autoincrement())
   title                String
   description          String
   category             String
@@ -17,28 +17,28 @@ model Product {
   discountPercentage   Float
   rating               Float?
   stock                Int
-  tags                 Json 
+  tags                 Json
   brand                String
-  sku                  String? @unique
-  weight               Float   @default(0)
-  width                Float   @default(0)
-  height               Float   @default(0)
-  depth                Float   @default(0)
-  warrantyInformation  String? @default("")
-  shippingInformation  String? @default("")
+  sku                  String?  @unique
+  weight               Float    @default(0)
+  width                Float    @default(0)
+  height               Float    @default(0)
+  depth                Float    @default(0)
+  warrantyInformation  String?  @default("")
+  shippingInformation  String?  @default("")
   availabilityStatus   String?
-  returnPolicy         String? @default("")
+  returnPolicy         String?  @default("")
   minimumOrderQuantity Int
   barcode              String?
   qrCode               String?
-  images               Json 
+  images               Json
   thumbnail            String
-  createdAt DateTime          @default(now())
-  updatedAt DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @default(now()) @updatedAt
 
   // Relations
   reviews       Review[]
-  seededProduct SeededProduct? 
+  seededProduct SeededProduct?
 }
 
 model Review {
@@ -48,7 +48,7 @@ model Review {
   date          DateTime
   reviewerName  String
   reviewerEmail String
-  product       Product  @relation(fields: [productId], references: [id])
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId     Int
 }
 

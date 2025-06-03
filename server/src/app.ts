@@ -1,4 +1,6 @@
 import express from 'express';
+import favicon from 'serve-favicon';
+import path from 'path';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
@@ -20,6 +22,8 @@ app.use(rateLimit({
     legacyHeaders: false,
 }));
 
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
 // Routes
 app.get('/', (_req, res) => {
     res.status(200).json({
@@ -28,6 +32,7 @@ app.get('/', (_req, res) => {
         products: '/api/products',
     });
 });
+
 
 app.get('/api/health', (_req, res) => {
     res.status(200).json({ status: 'ok' });

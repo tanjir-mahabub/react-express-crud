@@ -1,94 +1,74 @@
 import { z } from 'zod';
 
-export const productSchema = z.object({
-    id: z.number(),
+// --- Reusable small schemas ---
+
+const DimensionsSchema = z.object({
+    width: z.number().nonnegative().default(0),
+    height: z.number().nonnegative().default(0),
+    depth: z.number().nonnegative().default(0),
+});
+
+const MetaSchema = z
+    .object({
+        createdAt: z.string().optional(),
+        updatedAt: z.string().optional(),
+        barcode: z.string().default(''),
+        qrCode: z.string().default(''),
+    })
+    .strip()
+    .default({});
+
+const ReviewSchema = z.object({
+    id: z.number().optional(),
+    rating: z.number().min(0).max(5),
+    comment: z.string(),
+    date: z.string(),
+    reviewerName: z.string(),
+    reviewerEmail: z.string().email(),
+    productId: z.number().optional(),
+});
+
+const ReviewsSchema = z.array(ReviewSchema).default([]);
+
+// --- Base product properties shared by create/update/full ---
+
+const BaseProductSchema = z.object({
     title: z.string().min(1),
     description: z.string().min(1),
     category: z.string().min(1),
     price: z.number().nonnegative(),
     discountPercentage: z.number().nonnegative(),
     rating: z.number().min(0).max(5).optional(),
-    stock: z.number().int().nonnegative(),
-    tags: z.array(z.string()).optional().default([]),
+    stock: z.number().int().nonnegative().default(0),
+    tags: z.array(z.string()).default([]),
     brand: z.string().min(1),
     sku: z.string().optional(),
-    weight: z.number().nonnegative().optional().default(0),
-    dimensions: z
-        .object({
-            width: z.number().nonnegative(),
-            height: z.number().nonnegative(),
-            depth: z.number().nonnegative(),
-        })
-        .optional()
-        .default({ width: 0, height: 0, depth: 0 }),
-    warrantyInformation: z.string().optional().default(''),
-    shippingInformation: z.string().optional().default(''),
-    availabilityStatus: z.string().optional().default('available'),
-    returnPolicy: z.string().optional().default(''),
-    minimumOrderQuantity: z.number().int().nonnegative().optional().default(1),
-    meta: z
-        .object({
-            createdAt: z.string().optional(),
-            updatedAt: z.string().optional(),
-            barcode: z.string().optional().default(''),
-            qrCode: z.string().optional().default(''),
-        })
-        .optional()
-        .default({}),
-    reviews: z
-        .array(
-            z.object({
-                id: z.number().optional(),
-                rating: z.number().min(0).max(5),
-                comment: z.string(),
-                date: z.string(),
-                reviewerName: z.string(),
-                reviewerEmail: z.string().email(),
-                productId: z.number().optional(),
-            })
-        )
-        .optional()
-        .default([]),
-    images: z.array(z.string().url()),
-    thumbnail: z.string().url(),
-});
-
-export const productCreateSchema = productSchema.omit({ id: true }).extend({
-    stock: z.number().int().nonnegative().default(0),
-    minimumOrderQuantity: z.number().int().nonnegative().default(1),
     weight: z.number().nonnegative().default(0),
-    dimensions: z
-        .object({
-            width: z.number().nonnegative().default(0),
-            height: z.number().nonnegative().default(0),
-            depth: z.number().nonnegative().default(0),
-        })
-        .default({ width: 0, height: 0, depth: 0 }),
-    tags: z.array(z.string()).default([]),
-    images: z.array(z.string().url()).default([]),
-    reviews: z.array(
-        z.object({
-            rating: z.number().min(0).max(5),
-            comment: z.string(),
-            date: z.string(),
-            reviewerName: z.string(),
-            reviewerEmail: z.string().email(),
-        })
-    ).default([]),
+    dimensions: DimensionsSchema,
     warrantyInformation: z.string().default(''),
     shippingInformation: z.string().default(''),
     availabilityStatus: z.string().default('available'),
     returnPolicy: z.string().default(''),
-    meta: z
-        .object({
-            createdAt: z.string().optional(),
-            updatedAt: z.string().optional(),
-            barcode: z.string().default(''),
-            qrCode: z.string().default(''),
-        })
-        .default({}),
+    minimumOrderQuantity: z.number().int().nonnegative().default(1),
+    meta: MetaSchema,
+    reviews: ReviewsSchema,
+    images: z.array(z.string().url()).default([]),
+    thumbnail: z.string().url(),
 });
 
-export const productUpdateSchema = productSchema.partial().omit({ id: true });
+// --- Full product schema includes ID ---
+export const productSchema = BaseProductSchema.extend({
+    id: z.number(),
+});
 
+// --- Create schema omits ID (no id on create) ---
+export const productCreateSchema = BaseProductSchema;
+
+// --- Update schema is partial (all optional), also omit id ---
+export const productUpdateSchema = BaseProductSchema.partial().omit({
+    thumbnail: true,
+    images: true,
+});
+
+// --- Type ---
 export type ProductType = z.infer<typeof productSchema>;
