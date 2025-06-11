@@ -9,6 +9,11 @@ export default function EmptyState({
     isFallback?: boolean
     hasData?: boolean
 }) {
+    let message = "No products found"
+    if (isFallback) {
+        message = hasData ? "Showing fallback data." : "No fallback products available."
+    }
+
     return (
         <div className="relative p-6 h-[300px] flex flex-col items-center justify-center space-y-2">
             {isLoading ? (
@@ -17,13 +22,7 @@ export default function EmptyState({
                     <p className="text-gray-500">Loading products...</p>
                 </div>
             ) : (
-                <p className="text-gray-500 text-lg">
-                    {isFallback
-                        ? hasData
-                            ? "Showing fallback data."
-                            : "No fallback products available."
-                        : "No products found"}
-                </p>
+                <p className="text-gray-500 text-lg">{message}</p>
             )}
 
             {isFallback && !isLoading && (

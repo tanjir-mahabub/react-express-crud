@@ -35,44 +35,52 @@ export default function ProductTable({
 }: ProductTableProps) {
     const { sortField, toggleSort, getSortIcon, sortData } = useProductSort<typeof products[0]>("title")
     const { isExpanded, toggleExpand } = useRowExpansion<number>()
-
     const isOnline = useOnlineStatus()
-    const isFallback = !isOnline || (error && error.toLowerCase().includes("network"))
+
+    const isFallback = !isOnline || !!(error && /(network|timeout|failed|fetch|5\d{2})/i.test(error))
     const [wasFallback, setWasFallback] = useState(false)
+    const [isRecovering, setIsRecovering] = useState(false)
+    const [isPolling, setIsPolling] = useState(false)
     const [deleteId, setDeleteId] = useState<number | null>(null)
 
     // Track fallback state changes and trigger refetch once recovered
     useEffect(() => {
-        if (isFallback) {
+        if (isFallback && !isRecovering) {
             setWasFallback(true)
+            setIsRecovering(true)
         }
 
-        if (wasFallback && !isFallback) {
+        if (wasFallback && !isFallback && isRecovering) {
             refetch()
             setWasFallback(false)
+            setIsRecovering(false)
         }
-    }, [isFallback, wasFallback, refetch])
+    }, [isFallback, wasFallback, isRecovering, refetch])
 
     // Poll server health when in fallback mode
     useEffect(() => {
-        if (!isFallback) return
+        if (!isFallback || !isRecovering) return
 
         const interval = setInterval(async () => {
             try {
+                setIsPolling(true) 
                 const serverIsHealthy = await checkServerHealth()
+                setIsPolling(false)
+
                 if (serverIsHealthy) {
                     refetch()
                     setWasFallback(false)
+                    setIsRecovering(false)
                 }
             } catch {
+                setIsPolling(false)
                 // ignore errors, keep retrying
             }
-        }, 10000) // retry every 10 seconds
+        }, 10000)
 
         return () => clearInterval(interval)
-    }, [isFallback, refetch])
+    }, [isFallback, isRecovering, refetch])
 
-    // Use the sorting hook to sort products
     const sortedProducts = sortData(products)
 
     const {
@@ -85,17 +93,22 @@ export default function ProductTable({
     } = usePagination(sortedProducts, ITEMS_PER_PAGE)
 
     // === Conditional Renders ===
-    if (isFallback) {
+
+    if (isFallback && products.length === 0) {
         return (
             <>
                 <ConnectionWarning />
-                {products.length === 0 ? <EmptyState isLoading={false} isFallback={true} /> : null}
+                <EmptyState
+                    isLoading={isPolling || isLoading} // Show spinner only if a health check is happening
+                    isFallback
+                    hasData={false}
+                />
             </>
         )
-    }
+    }    
 
     if (isLoading && !error) {
-        return <ProductSkeleton />
+        return <EmptyState isLoading isFallback={isFallback} hasData={products.length > 0} />
     }
 
     if (!isLoading && products.length === 0) {
@@ -143,7 +156,6 @@ export default function ProductTable({
                     }
                 }}
             />
-
         </div>
     )
 }
